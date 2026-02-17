@@ -116,3 +116,28 @@ once pgAdmin is running, you can access it in your web browser at `http://localh
 - Port: `5432`
 - Username: `root`
 - Password: `root`
+
+## Docker compose
+You can also use Docker Compose to manage both the PostgreSQL and pgAdmin containers together. Create a `docker-compose.yaml` file with required configuration and run `docker-compose up` to start both services. This simplifies the process of starting and stopping your database and pgadmin interface.
+
+### Running ingest-data.py in a container with Docker Compose
+
+```bash
+# check the network link:
+docker network ls
+
+# it's pipeline_default (or similar based on directory name)
+# now run the script:
+docker run -it --rm \
+  --network=pipeline_default \
+  taxi_ingest:v001 \
+  --year 2021 \
+  --month 1 \
+  --pg-user root \
+  --pg-pass root \
+  --pg-host pgdatabase \
+  --pg-port 5432 \
+  --pg-db ny_taxi \
+  --target-table yellow_taxi_data \
+  --chunk-size 100000
+```
