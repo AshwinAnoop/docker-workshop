@@ -53,3 +53,47 @@ uv run python ingest-data.py \
   --target-table yellow_taxi_data \
   --chunk-size 100000
 ```
+
+## Command to build the Docker image for the data ingestion script.
+```bash
+docker build -t taxi_ingest:v001 .
+```
+
+## Run PostgreSQL on the network
+
+### create the network
+```bash
+docker network create pg-network
+```
+
+### run PostgreSQL on the network
+```bash
+docker run -it --rm \
+  -e POSTGRES_USER="root" \
+  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_DB="ny_taxi" \
+  -v ny_taxi_postgres_data:/var/lib/postgresql \
+  -p 5432:5432 \
+  --network=pg-network \
+  --name pgdatabase \
+  postgres:18
+```
+
+## Run the data ingestion script in a container on the same network to connect to PostgreSQL using the hostname `pgdatabase` (the name of the Postgres container).
+
+```bash
+docker run -it --rm \
+  --network=pg-network \
+  taxi_ingest:v001 \
+  --year 2021 \
+  --month 1 \
+  --pg-user root \
+  --pg-pass root \
+  --pg-host pgdatabase \
+  --pg-port 5432 \
+  --pg-db ny_taxi \
+  --target-table yellow_taxi_data \
+  --chunk-size 100000
+```
+
+

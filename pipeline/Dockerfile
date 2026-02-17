@@ -18,7 +18,7 @@ COPY "pyproject.toml" ".python-version" "uv.lock" ./
 RUN uv sync --locked
 
 #Copy pipeline code to container from local machine
-COPY pipeline.py ./pipeline.py
+COPY ingest-data.py ./ingest-data.py
 
 # Set the entrypoint to run the pipeline using Uv
-ENTRYPOINT ["python","pipeline.py"]
+ENTRYPOINT ["python","ingest-data.py"]
