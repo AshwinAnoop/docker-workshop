@@ -1,9 +1,11 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from tqdm.auto import tqdm
+import click
 
 #sqlalchemy is used to connect to the Postgres database
 #tqdm is used to show progress bars during data ingestion
+#click is used to create a command-line interface for the script, allowing us to specify parameters such as the year and month of the data to ingest.
 
 # Define the data types for each column
 dtype = {
@@ -31,19 +33,18 @@ parse_dates = [
     "tpep_dropoff_datetime",
 ]
 
+@click.command()
+@click.option("--year", default=2021, help="Year of the data to ingest")
+@click.option("--month", default=1, help="Month of the data to ingest")
+@click.option('--pg-user', default='root', help='PostgreSQL user')
+@click.option('--pg-pass', default='root', help='PostgreSQL password')
+@click.option('--pg-host', default='localhost', help='PostgreSQL host')
+@click.option('--pg-port', default=5432, type=int, help='PostgreSQL port')
+@click.option('--pg-db', default='ny_taxi', help='PostgreSQL database name')
+@click.option('--target-table', default='yellow_taxi_data', help='Target table name')
+@click.option('--chunk-size', default=100000, help='Number of rows to process in each chunk')
 
-
-def run():
-
-    year = 2021
-    month = 1
-
-    pg_user = "root"
-    pg_pass = "root"
-    pg_host = "localhost"
-    pg_port = 5432
-    pg_db = "ny_taxi"
-
+def run(pg_user, pg_pass, pg_host, pg_port, pg_db, target_table, chunk_size, year, month):
 
     # Create the connection string
     engine = create_engine(
@@ -52,10 +53,6 @@ def run():
 
     prefix = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/"
     url = f"{prefix}yellow_tripdata_{year:04d}-{month:02d}.csv.gz"
-    target_table = "yellow_taxi_data"
-
-    # Read the CSV file in chunks
-    chunk_size = 100000
     
     df_iter = pd.read_csv(
     url,

@@ -39,3 +39,17 @@ uv add sqlalchemy "psycopg[binary,pool]"
 ```bash 
 uv add tqdm
 ```
+
+## To run the data ingestion script with the appropriate parameters to ingest data into your local Postgres instance. This CLI Parameters are introduced using `click` in the `ingest-data.py` script.
+```bash
+uv run python ingest-data.py \
+  --year 2021 \
+  --month 1 \
+  --pg-user root \
+  --pg-pass root \
+  --pg-host localhost \
+  --pg-port 5432 \
+  --pg-db ny_taxi \
+  --target-table yellow_taxi_data \
+  --chunk-size 100000
+```
