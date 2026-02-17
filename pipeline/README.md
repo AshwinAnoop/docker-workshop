@@ -96,4 +96,23 @@ docker run -it --rm \
   --chunk-size 100000
 ```
 
+## Run pgAdmin on the same network to connect to PostgreSQL using the hostname `pgdatabase`.
+pg admin is a web-based GUI for managing PostgreSQL databases. The following command runs pgAdmin in a Docker container, connects it to the same `pg-network`, and exposes it on port 8085.
 
+```bash
+docker run -it --rm \
+  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -v pgadmin_data:/var/lib/pgadmin \
+  -p 8085:80 \
+  --network=pg-network \
+  --name pgadmin \
+  dpage/pgadmin4
+```
+
+once pgAdmin is running, you can access it in your web browser at `http://localhost:8085`. Log in with the email `admin@admin.com` and password `root`. Then, Register a new server connection with the following details:
+- Name: `PostgreSQL` (any name you like)
+- Hostname/address: `pgdatabase`
+- Port: `5432`
+- Username: `root`
+- Password: `root`
